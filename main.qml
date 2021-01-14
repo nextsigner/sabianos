@@ -1,21 +1,37 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.0
+import Qt.labs.settings 1.1
 
 ApplicationWindow {
     id: app
     visible: true
     visibility: "Maximized"
-    color: 'black'
+    color: apps.bgColor
     property var signos: ['Aries', 'Tauro', 'Géminis', 'Cáncer', 'Leo', 'Virgo', 'Libra', 'Escorpio', 'Sagitario', 'Capricornio', 'Acuario', 'Piscis']
     property int numSign: 0
     property int numDegree: 0
-    property int fs: width*0.03
+    property int fs: width*0.025
     property int currentInterpreter: 0
-
+    Settings{
+        id: apps
+        fileName: 'sabianos.cfg'
+        property string bgColor: '#ffffff'
+    }
     Item{
         id: xApp
         anchors.fill: parent
+        MouseArea{
+            anchors.fill: parent
+            onDoubleClicked: {
+                if(apps.bgColor==='#ffffff'){
+                    apps.bgColor='#000000'
+                }else{
+                    apps.bgColor='#ffffff'
+                }
+                loadData()
+            }
+        }
         Text{
             id: data
             text: '<h1>Los Sabianos</h1>'
@@ -34,7 +50,7 @@ ApplicationWindow {
             }
             Text {
                 id: currentSign
-                text: '<b>'+app.signos[app.numSign]+'</b>'+' ci:'+app.currentInterpreter+' ad:'+app.numDegree+' cs:'+app.numSign
+                text: '<b>'+app.signos[app.numSign]+'</b>'//+' ci:'+app.currentInterpreter+' ad:'+app.numDegree+' cs:'+app.numSign
                 font.pixelSize: app.fs*2
                 //color: 'white'
                 anchors.verticalCenter: parent.verticalCenter
@@ -47,6 +63,7 @@ ApplicationWindow {
             font.pixelSize: app.fs*2
             //color: 'white'
             anchors.bottom: parent.bottom
+            visible: false
         }
     }
     Shortcut{
@@ -111,20 +128,8 @@ ApplicationWindow {
                     }else{
                         app.numSign=0
                     }
-                    //app.numDegree=1
                 }
             }
-            //return
-            /*if(app.numDegree<30){
-                app.numDegree++
-            }else{
-                if(app.numSign<11){
-                    app.numSign++
-                }else{
-                    app.numSign=0
-                }
-                app.numDegree=1
-            }*/
             loadData()
         }
     }
@@ -134,7 +139,7 @@ ApplicationWindow {
     function loadData(){
         let fileData=''+unik.getFile('360.html')
         let dataSign=fileData.split('---')
-        app.color='white'
+        //app.color='white'
         //console.log('-----------'+dataSign[app.numSign+1])
         //data.text='<h2  style="text-align: center;">'+dataSign[app.numSign+1]
         let stringSplit=''
@@ -165,20 +170,20 @@ ApplicationWindow {
         //console.log(htmlPrevio+'-----------'+dataDegree[app.numDegree])
         let mapHtmlDegree=htmlPrevio.split('<p ')
         let dataFinal='<p '+mapHtmlDegree[app.currentInterpreter + 1]
-        /*if(dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><strong><span style="color:')<0&&dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><span>strong style="color:')<0){
-            dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:#ffffff"><strong>')
-            dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><span ','<p class="entry-excerpt" style="text-align: justify;color:#ffffff"><span ')
-            dataFinal=dataFinal.replace('style="color: rgb(0, 0, 255);','style="color: rgb(255, 255, 255);')
-        }else{
-            if(dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><strong><span style="color: rgb(255, 0, 0);">'>=0)){
-                dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:red"><strong>')
+
+        if(apps.bgColor!=='#ffffff'){
+            if(dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><strong><span style="color:')<0&&dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><span>strong style="color:')<0){
+                dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:#ffffff"><strong>')
+                dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><span ','<p class="entry-excerpt" style="text-align: justify;color:#ffffff"><span ')
+                dataFinal=dataFinal.replace('style="color: rgb(0, 0, 255);','style="color: rgb(255, 255, 255);')
             }else{
-                dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:green"><strong>')
+                if(dataFinal.indexOf('<p class="entry-excerpt" style="text-align: justify;"><strong><span style="color: rgb(255, 0, 0);">'>=0)){
+                    dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:red"><strong>')
+                }else{
+                    dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: justify;"><strong>','<p class="entry-excerpt" style="text-align: justify;color:green"><strong>')
+                }
             }
-        }*/
-        /*if(dataFinal.indexOf('style="color: rgb(255, 0, 0);'>=0)){
-            dataFinal=dataFinal.replace('style="color: rgb(255, 0, 0);','style="color: rgb(255, 100, 100);')
-        }*/
+        }
         data.text=dataFinal
     }
 }
