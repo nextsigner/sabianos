@@ -21,6 +21,7 @@ ApplicationWindow {
     Item{
         id: xApp
         anchors.fill: parent
+        focus: true
         MouseArea{
             anchors.fill: parent
             onDoubleClicked: {
@@ -43,10 +44,11 @@ ApplicationWindow {
             anchors.centerIn: parent
         }
         Row{
-            spacing: app.fs
+            spacing: app.fs*0.25
             XSigno{
                 id: xSigno
                 numSign: app.numSign
+                anchors.verticalCenter: parent.verticalCenter
             }
             Text {
                 id: currentSign
@@ -69,6 +71,30 @@ ApplicationWindow {
     Shortcut{
         sequence: 'Esc'
         onActivated: Qt.quit()
+    }
+    Shortcut{
+        sequence: 'Ctrl+Down'
+        onActivated: {
+            if(app.numSign<11){
+                app.numSign++
+            }else{
+                app.numSign=0
+                app.currentInterpreter=0
+            }
+            loadData()
+        }
+    }
+    Shortcut{
+        sequence: 'Ctrl+Up'
+        onActivated: {
+            if(app.numSign>0){
+                app.numSign--
+            }else{
+                app.numSign=11
+                app.currentInterpreter=0
+            }
+            loadData()
+        }
     }
     Shortcut{
         sequence: 'Down'
@@ -100,11 +126,17 @@ ApplicationWindow {
             if(app.currentInterpreter>0){
                 app.currentInterpreter--
             }else{
-                app.currentInterpreter=30
-                if(app.numSign>0){
-                    app.numSign--
+                app.currentInterpreter=2
+                if(app.numDegree>0){
+                    app.numDegree--
                 }else{
-                    app.numSign=11
+                    app.numDegree=29
+                    app.currentInterpreter=2
+                    if(app.numSign>0){
+                        app.numSign--
+                    }else{
+                        app.numSign=11
+                    }
                 }
             }
             loadData()
@@ -113,7 +145,6 @@ ApplicationWindow {
     Shortcut{
         sequence: 'Right'
         onActivated: {
-            let aND=false
             if(app.currentInterpreter<2){
                 app.currentInterpreter++
             }else{
@@ -134,6 +165,12 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
+        if(Qt.application.arguments.length===4){
+            let ns=parseInt(Qt.application.arguments[2])-1
+            let ng=parseInt(Qt.application.arguments[3])-1
+            app.numSign=ns
+            app.numDegree=ng
+        }
         loadData()
     }
     function loadData(){
