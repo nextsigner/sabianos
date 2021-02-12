@@ -210,8 +210,10 @@ ApplicationWindow {
             let m1=m0[i].split('.')
             let s=parseInt(m1[0])
             let g=parseInt(m1[1])
+            let h=m1[2]
 
             html+='<h2>Grupo '+parseInt(i)+'</h2>\n'
+            html+='<h4>Hora de Nacimiento: '+h+'hs</h4>\n'
             html+=getHtmlData(s-1,g-1,0)
             html+=getHtmlData(s-1,g-1,1)
             html+=getHtmlData(s-1,g-1,2)
