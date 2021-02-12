@@ -191,6 +191,7 @@ ApplicationWindow {
             console.log('Creando html...')
             let stringMakeHtml=Qt.application.arguments[2]
             makeHtml(stringMakeHtml)
+            Qt.quit()
             return
         }
         if(Qt.application.arguments.length===4){
@@ -218,20 +219,28 @@ ApplicationWindow {
             cantGrupos++
         }
         setHtml(html, m0[0])
+        let d=new Date(Date.now())
+        let ms=d.getTime()
+        let url='https://nextsigner.github.io/sabianos/'+m0[0]+'.html?r='+ms
+        console.log('Url: '+url)
+        let sh='#!/bin/bash\n'
+        sh+='cd /home/ns/nsp/nextsigner.github.io\n'
+        sh+='git add *\n'
+        sh+='git commit -m "se sube el html '+m0[0]+' '+ms+'"\n'
+        sh+='git push origin master\n'
+        sh+='echo "Html subido!"\n'
+        unik.setFile('/tmp/'+ms+'.sh', sh)
+        unik.run('sh /tmp/'+ms+'.sh')
     }
     function loadData(){
         let fileData=''+unik.getFile('360.html')
         let dataSign=fileData.split('---')
-        //app.color='white'
-        //console.log('-----------'+dataSign[app.numSign+1])
-        //data.text='<h2  style="text-align: center;">'+dataSign[app.numSign+1]
         let stringSplit=''
         if(app.numDegree<=8){
             stringSplit='0'+parseInt(app.numDegree+1)+'°:'
         }else{
             stringSplit=''+parseInt(app.numDegree+1)+'°:'
         }
-
         let signData=''+dataSign[app.numSign+1]
         //console.log('\n\n\nAries---->>'+signData+'\n\n\n')
         let dataDegree=signData.split('<p ')
@@ -247,10 +256,6 @@ ApplicationWindow {
             }
         }
         console.log('Cantidad '+cp)
-        //data.text=htmlPrevio
-        //return
-        //console.log('----------->>'+stringSplit)
-        //console.log(htmlPrevio+'-----------'+dataDegree[app.numDegree])
         let mapHtmlDegree=htmlPrevio.split('<p ')
         let dataFinal='<p '+mapHtmlDegree[app.currentInterpreter + 1]
 
@@ -272,16 +277,12 @@ ApplicationWindow {
     function getHtmlData(s, g, item){
         let fileData=''+unik.getFile('360.html')
         let dataSign=fileData.split('---')
-        //app.color='white'
-        //console.log('-----------'+dataSign[app.numSign+1])
-        //data.text='<h2  style="text-align: center;">'+dataSign[app.numSign+1]
         let stringSplit=''
         if(g<=8){
             stringSplit='0'+parseInt(g+1)+'°:'
         }else{
             stringSplit=''+parseInt(g+1)+'°:'
         }
-
         let signData=''+dataSign[s+1]
         //console.log('\n\n\nAries---->>'+signData+'\n\n\n')
         let dataDegree=signData.split('<p ')
@@ -296,18 +297,9 @@ ApplicationWindow {
                 //console.log('\n\n----------->>'+htmlPrevio)
             }
         }
-        //console.log('Cantidad '+cp)
-        //data.text=htmlPrevio
-        //return
-        //console.log('----------->>'+stringSplit)
-        //console.log(htmlPrevio+'-----------'+dataDegree[app.numDegree])
         let mapHtmlDegree=htmlPrevio.split('<p ')
-
-        let dataFinal=item===0?'<h2> Grado °'+parseInt(g + 1)+' de '+app.signos[s]+'</h2>':''
+        let dataFinal=item===0?'<h3> Grado °'+parseInt(g + 1)+' de '+app.signos[s]+'</h3>\n':''
         dataFinal+='<p '+mapHtmlDegree[item + 1]
-
-
-
         if(apps.bgColor!=='#ffffff'){
             if(dataFinal.indexOf('<p class="entry-excerpt" style="text-align: left;"><strong><span style="color:')<0&&dataFinal.indexOf('<p class="entry-excerpt" style="text-align: left;"><span>strong style="color:')<0){
                 dataFinal=dataFinal.replace('<p class="entry-excerpt" style="text-align: left;"><strong>','<p class="entry-excerpt" style="text-align: left;color:#ffffff"><strong>')
