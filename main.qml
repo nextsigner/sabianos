@@ -222,15 +222,16 @@ ApplicationWindow {
         let d=new Date(Date.now())
         let ms=d.getTime()
         let url='https://nextsigner.github.io/sabianos/'+m0[0]+'.html?r='+ms
-        console.log('Url: '+url)
         let sh='#!/bin/bash\n'
-        sh+='cd /home/ns/nsp/nextsigner.github.io\n'
+        sh+='cd /home/ns/nsp/uda/nextsigner.github.io\n'
         sh+='git add *\n'
         sh+='git commit -m "se sube el html '+m0[0]+' '+ms+'"\n'
         sh+='git push origin master\n'
         sh+='echo "Html subido!"\n'
+        sh+='exit\n'
         unik.setFile('/tmp/'+ms+'.sh', sh)
-        unik.run('sh /tmp/'+ms+'.sh')
+        unik.ejecutarLineaDeComandoAparte('sh /tmp/'+ms+'.sh')
+        console.log('Url: '+url+' script=/tmp/'+ms+'.sh')
     }
     function loadData(){
         let fileData=''+unik.getFile('360.html')
