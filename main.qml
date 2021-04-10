@@ -188,9 +188,32 @@ ApplicationWindow {
     }
     Component.onCompleted: {
         if(Qt.application.arguments.length===3){
+            //Parametros esperados unik -folder=$PWD "laura 2.13.10:01 3.13.10:01 12.30.10:01"
             console.log('Creando html...')
             let stringMakeHtml=Qt.application.arguments[2]
             makeHtml(stringMakeHtml)
+            Qt.quit()
+            return
+        }
+        if(Qt.application.arguments.length===8){
+            //Parametros esperados unik -folder=$PWD "nom" "fecha" "hora"  "2.13" "3.13" "12.30"
+            //unik.speak('5 arguments')
+            console.log('Creando html SAM...')
+            console.log('Nombre:'+Qt.application.arguments[2])
+            console.log('Fecha:'+Qt.application.arguments[3])
+            console.log('Hora:'+Qt.application.arguments[4])
+            console.log('Sol:'+Qt.application.arguments[5])
+            console.log('Asc:'+Qt.application.arguments[6])
+            console.log('Mc:'+Qt.application.arguments[7])
+            //console.log('a7:'+Qt.application.arguments[8])
+            //stringMakeHtml=Qt.application.arguments[6]
+            let nom=Qt.application.arguments[2]
+            let fecha=Qt.application.arguments[3]
+            let hora=Qt.application.arguments[4]
+            let sol=Qt.application.arguments[5]
+            let asc=Qt.application.arguments[6]
+            let mc=Qt.application.arguments[7]
+            makeHtmlSAM(nom, fecha, hora, sol, asc, mc)
             Qt.quit()
             return
         }
@@ -228,6 +251,59 @@ ApplicationWindow {
         sh+='cd /home/ns/nsp/uda/nextsigner.github.io\n'
         sh+='git add *\n'
         sh+='git commit -m "se sube el html '+m0[0]+' '+ms+'"\n'
+        sh+='git push origin master\n'
+        sh+='echo "Html subido!"\n'
+        sh+='exit\n'
+        unik.setFile('/tmp/'+ms+'.sh', sh)
+        unik.ejecutarLineaDeComandoAparte('sh /tmp/'+ms+'.sh')
+        console.log('Url: '+url+' script=/tmp/'+ms+'.sh')
+    }
+
+    //Sol Asc Mc
+    function makeHtmlSAM(nom, fecha, hora, sol, asc, mc){
+        //let m0=string.split(' ')
+        let html=''
+        html+='<h4>Fecha de Nacimiento: '+fecha+'</h4>\n'
+        html+='<h4>Hora de Nacimiento: '+hora+'hs</h4>\n'
+
+        let m1=sol.split('.')
+        let s=parseInt(m1[0])
+        let g=parseInt(m1[1])
+        let h=m1[2]
+        html+='<h2>Sol </h2>\n'
+        html+=getHtmlData(s-1,g-1,0)
+        html+=getHtmlData(s-1,g-1,1)
+        html+=getHtmlData(s-1,g-1,2)
+        html+='\n'
+
+        m1=asc.split('.')
+        s=parseInt(m1[0])
+        g=parseInt(m1[1])
+        h=m1[2]
+        html+='<h2>Ascendente </h2>\n'
+        html+=getHtmlData(s-1,g-1,0)
+        html+=getHtmlData(s-1,g-1,1)
+        html+=getHtmlData(s-1,g-1,2)
+        html+='\n'
+
+        m1=mc.split('.')
+        s=parseInt(m1[0])
+        g=parseInt(m1[1])
+        h=m1[2]
+        html+='<h2>Medio Cielo</h2>\n'
+        html+=getHtmlData(s-1,g-1,0)
+        html+=getHtmlData(s-1,g-1,1)
+        html+=getHtmlData(s-1,g-1,2)
+        html+='\n'
+
+        setHtmlSAM(html, nom)
+        let d=new Date(Date.now())
+        let ms=d.getTime()
+        let url='https://nextsigner.github.io/sabianos/'+nom+'.html?r='+ms
+        let sh='#!/bin/bash\n'
+        sh+='cd /home/ns/nsp/uda/nextsigner.github.io\n'
+        sh+='git add *\n'
+        sh+='git commit -m "se sube el html '+nom+' '+ms+'"\n'
         sh+='git push origin master\n'
         sh+='echo "Html subido!"\n'
         sh+='exit\n'
@@ -331,6 +407,24 @@ ApplicationWindow {
         <p><b>Aviso: </b>Los textos en color rojo son algo negativos. Tantos los textos azules o rojos puede ser que aún no se hayan producido.</p>
         <br/>
         <h2>¿Cuál de los siguientes grupos de textos pensas que hablan de cosas más parecidas a tu vida o forma de ser?</h2>
+        <br/>\n'
++html+
+'<br />
+         <br />
+    </body>
+</html>'
+        unik.setFile('/home/ns/nsp/uda/nextsigner.github.io/sabianos/'+nom+'.html', htmlFinal)
+    }
+    function setHtmlSAM(html, nom){
+        let htmlFinal='<DOCTYPE html>
+<html>
+<head>
+    <title>'+nom+'</title>
+</head>
+    <body style="background-color:#ffffff;">
+        <h1>Simbología de los Sabianos de  '+nom+'</h1>
+        <p>Los textos que vas a leer a continuación, son como descripciones de imágenes que simbolizan una escena de algo que se puede presentar en tu vida de algn modo parecido o similar.</p>
+        <p><b>Aviso: </b>Los textos en color rojo son algo negativos. Tantos los textos azules o rojos puede ser que aún no se hayan producido.</p>
         <br/>\n'
 +html+
 '<br />
